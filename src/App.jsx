@@ -7,12 +7,14 @@ import AssetDetail from "./pages/AssetDetail";
 import Learn from "./pages/Learn";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import Profile from "./pages/Profile";
 import CoinbaseOne from "./pages/CoinbaseOne";
 import AdvancedTrade from "./pages/AdvancedTrade";
 
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import WarningBanner from "./components/common/WarningBanner";
 import { UserProvider } from "./hooks/UserContext";
 
 
@@ -42,6 +44,7 @@ function AppShell() {
 
   return (
     <>
+      {!isFullScreenRoute && <WarningBanner />}
       {!isFullScreenRoute && <Navbar />}
       <div className="min-h-screen flex flex-col">
         <Routes>
@@ -52,6 +55,7 @@ function AppShell() {
           <Route path="/advanced" element={<AdvancedTrade />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/coinbase-one" element={<CoinbaseOne />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

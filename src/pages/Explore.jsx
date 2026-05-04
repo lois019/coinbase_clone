@@ -1,20 +1,66 @@
 
 
 
-import { useState } from "react";
-import { cryptos } from "../data/cryptos";
+import { useState, useEffect } from "react";
 import CryptoCard from "../components/crypto/CryptoCard";
 import Input from "../components/common/Input";
 import { Link } from "react-router-dom";
-
+import { cryptoAPI } from "../services/api";
 
 export default function Explore() {
   const [search, setSearch] = useState("");
+  const [cryptos, setCryptos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCryptos = async () => {
+      try {
+        const data = await cryptoAPI.getAllCryptos();
+        setCryptos(data);
+      } catch (err) {
+        setError('Failed to load cryptocurrencies');
+        console.error('Error fetching cryptos:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCryptos();
+  }, []);
+
   const filteredCryptos = cryptos.filter(
     (crypto) =>
       crypto.name.toLowerCase().includes(search.toLowerCase()) ||
       crypto.symbol.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full bg-white text-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading cryptocurrencies...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen w-full bg-white text-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-white text-slate-900">
@@ -136,12 +182,15 @@ export default function Explore() {
               <h2 className="text-xl font-semibold text-slate-900 mb-4">Crypto market prices</h2>
               <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                 {filteredCryptos.length === 0 ? (
-                  <div className="col-span-full text-center text-gray-500">No cryptocurrencies found.</div>
+                  <div className="col-span-full text-center text-gray-500 py-8">
+                    <p className="text-lg mb-2">No cryptocurrencies found</p>
+                    <p className="text-sm">Cryptocurrencies will appear here once added to the database.</p>
+                  </div>
                 ) : (
                   filteredCryptos.map((crypto) => (
                     <Link
-                      key={crypto.id}
-                      to={`/asset/${crypto.id}`}
+                      key={crypto._id}
+                      to={`/asset/${crypto._id}`}
                       className="block focus:outline-none focus:ring-2 focus:ring-blue-500 hover:scale-[1.02] transition-transform"
                       aria-label={`View details for ${crypto.name}`}
                     >
@@ -150,8 +199,8 @@ export default function Explore() {
                           name={crypto.name}
                           symbol={crypto.symbol}
                           price={crypto.price}
-                          change={crypto.change}
-                          icon={<img src={crypto.icon} alt={crypto.name} className="w-8 h-8" />}
+                          change={crypto.change24h}
+                          icon={<img src={crypto.image} alt={crypto.name} className="w-8 h-8" />}
                         />
                       </div>
                     </Link>
@@ -164,16 +213,16 @@ export default function Explore() {
               <h2 className="text-xl font-semibold text-slate-900 mb-4">Top movers</h2>
               <div className="space-y-4">
                 {cryptos.slice(0, 4).map((crypto) => (
-                  <div key={crypto.id} className="rounded-2xl border border-gray-200 p-4 flex items-center justify-between">
+                  <div key={crypto._id} className="rounded-2xl border border-gray-200 p-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <img src={crypto.icon} alt={crypto.name} className="w-10 h-10" />
+                      <img src={crypto.image} alt={crypto.name} className="w-10 h-10" />
                       <div>
                         <p className="text-sm font-semibold">{crypto.name}</p>
                         <p className="text-xs text-slate-500 uppercase tracking-wide">{crypto.symbol}</p>
                       </div>
                     </div>
-                    <p className={crypto.change >= 0 ? "text-emerald-600 text-sm font-semibold" : "text-red-600 text-sm font-semibold"}>
-                      {crypto.change >= 0 ? "+" : ""}{crypto.change}%
+                    <p className={crypto.change24h >= 0 ? "text-emerald-600 text-sm font-semibold" : "text-red-600 text-sm font-semibold"}>
+                      {crypto.change24h >= 0 ? "+" : ""}{crypto.change24h}%
                     </p>
                   </div>
                 ))}

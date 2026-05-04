@@ -3,14 +3,19 @@ import { useState } from "react";
 import Button from "../components/common/Button";
 import { useUser } from "../hooks/UserContext";
 import logo from "../assets/coinbase-logo.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authAPI } from "../services/api";
 
 export default function SignUp() {
   const [selectedType, setSelectedType] = useState("personal");
   const [step, setStep] = useState(1); // 1 = choose type, 2 = create account form
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const { signIn } = useUser();
+  const navigate = useNavigate();
 
   const accountTypes = [
     {
@@ -38,11 +43,26 @@ export default function SignUp() {
     setStep(2);
   }
 
-  function handleCreateAccount(e) {
+  async function handleCreateAccount(e) {
     e.preventDefault();
-    if (!email) return;
-    signIn(email);
-    setMessage(`Account created for ${email} as a ${selectedType} account (demo).`);
+    if (!name || !email || !password) {
+      setMessage("Please fill in all fields.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await authAPI.register({ name, email, password });
+      if (response.message === 'User registered successfully') {
+        signIn({ email, token: response.token }); // Update frontend state
+        setMessage("Account created successfully!");
+        setTimeout(() => navigate('/'), 1000);
+      }
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Registration failed');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -69,6 +89,11 @@ export default function SignUp() {
               <p className="text-sm md:text-base text-slate-400 max-w-md">
                 Access all that NovaBlock has to offer with a single {selectedType} account.
               </p>
+              <div className="bg-amber-900/30 border border-amber-600 rounded-lg p-3 mt-4">
+                <p className="text-xs text-amber-200">
+                  <span className="font-semibold">⚠️ Demo app – do not use your real password</span>
+                </p>
+              </div>
             </>
           )}
         </header>
@@ -127,6 +152,19 @@ export default function SignUp() {
           <>
             <form onSubmit={handleCreateAccount} className="space-y-6">
               <div className="space-y-2">
+                <label className="text-xs font-semibold text-slate-300" htmlFor="name">
+                  Full Name
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Your full name"
+                  className="w-full rounded-lg border border-slate-700 bg-transparent px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div className="space-y-2">
                 <label className="text-xs font-semibold text-slate-300" htmlFor="email">
                   Email
                 </label>
@@ -139,11 +177,25 @@ export default function SignUp() {
                   className="w-full rounded-lg border border-slate-700 bg-transparent px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-slate-300" htmlFor="password">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Create a password"
+                  className="w-full rounded-lg border border-slate-700 bg-transparent px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
               <Button
                 type="submit"
-                className="w-full px-8 py-3 text-sm md:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition"
+                disabled={loading}
+                className="w-full px-8 py-3 text-sm md:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition disabled:opacity-50"
               >
-                Continue
+                {loading ? 'Creating account...' : 'Create account'}
               </Button>
             </form>
 

@@ -3,18 +3,34 @@ import { useState } from "react";
 import Button from "../components/common/Button";
 import { useUser } from "../hooks/UserContext";
 import logo from "../assets/coinbase-logo.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authAPI } from "../services/api";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const { signIn } = useUser();
+  const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!email) return;
-    signIn(email);
-    setMessage("Signed in as " + email);
+    if (!email || !password) return;
+
+    setLoading(true);
+    try {
+      const response = await authAPI.login({ email, password });
+      if (response.message === 'Login successful') {
+        signIn({ email, token: response.token }); // Update frontend state
+        setMessage("Login successful!");
+        setTimeout(() => navigate('/'), 1000);
+      }
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -27,6 +43,11 @@ export default function SignIn() {
           <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-3">
             Sign in to NovaBlock
           </h1>
+          <div className="bg-amber-900/30 border border-amber-600 rounded-lg p-3 mt-4">
+            <p className="text-xs text-amber-200">
+              <span className="font-semibold">⚠️ Demo app – do not use your real password</span>
+            </p>
+          </div>
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -43,11 +64,25 @@ export default function SignIn() {
               className="w-full rounded-lg border border-slate-700 bg-transparent px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-slate-300" htmlFor="signin-password">
+              Password
+            </label>
+            <input
+              id="signin-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Your password"
+              className="w-full rounded-lg border border-slate-700 bg-transparent px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
           <Button
             type="submit"
-            className="w-full px-8 py-3 text-sm md:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition"
+            disabled={loading}
+            className="w-full px-8 py-3 text-sm md:text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition disabled:opacity-50"
           >
-            Continue
+            {loading ? 'Signing in...' : 'Continue'}
           </Button>
         </form>
 
