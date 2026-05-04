@@ -82,14 +82,22 @@ export default function Explore() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                 {/* Left side stats */}
                 <div className="hidden md:flex flex-col gap-3 text-slate-100 text-xs">
-                  <div className="px-4 py-2 rounded-2xl bg-slate-900 border border-slate-800 w-32">
+                  <Link
+                    to="/asset/btc"
+                    className="px-4 py-2 rounded-2xl bg-slate-900 border border-slate-800 w-32 hover:border-blue-500 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="View Bitcoin details"
+                  >
                     <div className="font-semibold text-sm">BTC</div>
                     <div className="text-slate-400">$56,789</div>
-                  </div>
-                  <div className="px-4 py-2 rounded-2xl bg-slate-900 border border-slate-800 w-32">
+                  </Link>
+                  <Link
+                    to="/asset/eth"
+                    className="px-4 py-2 rounded-2xl bg-slate-900 border border-slate-800 w-32 hover:border-blue-500 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="View Ethereum details"
+                  >
                     <div className="font-semibold text-sm">ETH</div>
                     <div className="text-slate-400">$3,200</div>
-                  </div>
+                  </Link>
                 </div>
 
                 {/* Center full-width chart */}
