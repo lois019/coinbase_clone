@@ -213,7 +213,12 @@ export default function Explore() {
               <h2 className="text-xl font-semibold text-slate-900 mb-4">Top movers</h2>
               <div className="space-y-4">
                 {cryptos.slice(0, 4).map((crypto) => (
-                  <div key={crypto._id} className="rounded-2xl border border-gray-200 p-4 flex items-center justify-between">
+                  <Link
+                    key={crypto._id}
+                    to={`/asset/${crypto._id}`}
+                    className="rounded-2xl border border-gray-200 hover:border-blue-500 transition-all p-4 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label={`View details for ${crypto.name}`}
+                  >
                     <div className="flex items-center gap-4">
                       <img src={crypto.image} alt={crypto.name} className="w-10 h-10" />
                       <div>
@@ -224,7 +229,7 @@ export default function Explore() {
                     <p className={crypto.change24h >= 0 ? "text-emerald-600 text-sm font-semibold" : "text-red-600 text-sm font-semibold"}>
                       {crypto.change24h >= 0 ? "+" : ""}{crypto.change24h}%
                     </p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </aside>
