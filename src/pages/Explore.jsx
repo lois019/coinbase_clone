@@ -200,12 +200,12 @@ export default function Explore() {
                     <p className="text-sm">Cryptocurrencies will appear here once added to the database.</p>
                   </div>
                 ) : (
-                  <table className="w-full">
+                  <table className="w-full table-fixed">
                     <thead className="bg-slate-50 border-b border-gray-200">
                       <tr>
-                        <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Asset</th>
-                        <th className="text-right px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Price</th>
-                        <th className="text-right px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">24h Change</th>
+                        <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-1/2">Asset</th>
+                        <th className="text-right px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-1/4">Price</th>
+                        <th className="text-right px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-1/4">24h Change</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -217,7 +217,7 @@ export default function Explore() {
                           aria-label={`View details for ${crypto.name}`}
                         >
                           <tr className="cursor-pointer hover:bg-slate-50 transition-colors">
-                            <td className="px-6 py-4">
+                            <td className="px-6 py-4 w-1/2">
                               <div className="flex items-center gap-3">
                                 <img src={crypto.image} alt={crypto.name} className="w-8 h-8" />
                                 <div>
@@ -226,10 +226,10 @@ export default function Explore() {
                                 </div>
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-6 py-4 text-right w-1/4">
                               <p className="font-semibold text-slate-900">${crypto.price.toLocaleString()}</p>
                             </td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-6 py-4 text-right w-1/4">
                               <p className={`font-semibold ${crypto.change24h >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                                 {crypto.change24h >= 0 ? '+' : ''}{crypto.change24h}%
                               </p>
