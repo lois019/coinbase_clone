@@ -210,20 +210,17 @@ export default function Explore() {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                       {filteredCryptos.map((crypto) => (
-                        <Link
+                        <tr 
                           key={crypto._id}
-                          to={`/asset/${crypto._id}`}
-                          className="block hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          aria-label={`View details for ${crypto.name}`}
+                          className="cursor-pointer hover:bg-slate-50 transition-colors"
+                          onClick={() => window.location.href = `/asset/${crypto._id}`}
                         >
-                          <tr className="cursor-pointer hover:bg-slate-50 transition-colors">
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <img src={crypto.image} alt={crypto.name} className="w-8 h-8" />
-                                <div>
-                                  <p className="font-semibold text-slate-900">{crypto.name}</p>
-                                  <p className="text-xs text-slate-500 uppercase">{crypto.symbol}</p>
-                                </div>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <img src={crypto.image} alt={crypto.name} className="w-8 h-8" />
+                              <div>
+                                <p className="font-semibold text-slate-900">{crypto.name}</p>
+                                <p className="text-xs text-slate-500 uppercase">{crypto.symbol}</p>
                               </div>
                             </td>
                             <td className="px-6 py-4 text-right">
@@ -234,8 +231,7 @@ export default function Explore() {
                                 {crypto.change24h >= 0 ? '+' : ''}{crypto.change24h}%
                               </p>
                             </td>
-                          </tr>
-                        </Link>
+                        </tr>
                       ))}
                     </tbody>
                   </table>
