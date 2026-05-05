@@ -41,21 +41,15 @@ export default function Home() {
               Trade crypto and more on a platform you can trust.
             </p>
             
-            {/* Show user avatar when signed in, otherwise show signup form */}
+            {/* Show simple welcome when signed in, otherwise show signup form */}
             {user ? (
-              <div className="flex items-center gap-4 max-w-xl">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
-                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-slate-900">Welcome back!</p>
-                  <p className="text-sm text-slate-600">{user.name}</p>
-                  <Link to="/explore" className="inline-block mt-4">
-                    <Button className="px-6 py-2 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition">
-                      Explore Crypto
-                    </Button>
-                  </Link>
-                </div>
+              <div className="max-w-xl">
+                <p className="text-lg font-semibold text-slate-900">Welcome back, {user.name}!</p>
+                <Link to="/explore" className="inline-block mt-4">
+                  <Button className="px-6 py-2 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition">
+                    Explore Crypto
+                  </Button>
+                </Link>
               </div>
             ) : (
               <>
