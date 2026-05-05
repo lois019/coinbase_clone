@@ -222,7 +222,8 @@ export default function Explore() {
                                 <p className="font-semibold text-slate-900">{crypto.name}</p>
                                 <p className="text-xs text-slate-500 uppercase">{crypto.symbol}</p>
                               </div>
-                            </td>
+                            </div>
+                          </td>
                             <td className="px-6 py-4 text-right">
                               <p className="font-semibold text-slate-900">${crypto.price.toLocaleString()}</p>
                             </td>
@@ -231,7 +232,7 @@ export default function Explore() {
                                 {crypto.change24h >= 0 ? '+' : ''}{crypto.change24h}%
                               </p>
                             </td>
-                        </tr>
+                          </tr>
                       ))}
                     </tbody>
                   </table>
