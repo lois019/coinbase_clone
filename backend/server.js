@@ -24,6 +24,21 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/crypto', cryptoRoutes);
 
+// Root route - API info
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'NovaBlock API Server',
+    status: 'running',
+    endpoints: {
+      health: '/api/health',
+      auth: '/api/auth/*',
+      user: '/api/user/*',
+      crypto: '/api/crypto/*'
+    },
+    documentation: 'Visit /api/health for health check'
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
