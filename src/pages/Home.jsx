@@ -2,9 +2,12 @@
 
 import Button from "../components/common/Button";
 import { Link } from "react-router-dom";
+import { useUser } from "../hooks/UserContext";
 import logo from "../assets/coinbase-logo.svg";
 
 export default function Home() {
+  const { user } = useUser();
+  
   return (
     <div className="min-h-screen w-full bg-white text-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-16 space-y-24">
@@ -28,7 +31,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: headline + subtext + signup */}
+          {/* Right: headline + subtext + user status */}
           <div className="space-y-6">
             <img src={logo} alt="NovaBlock Logo" className="h-12 w-12" />
             <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900" aria-label="Your digital asset marketplace.">
@@ -37,18 +40,39 @@ export default function Home() {
             <p className="text-xl text-slate-600 max-w-xl">
               Trade crypto and more on a platform you can trust.
             </p>
-            <div className="max-w-xl">
-              <input
-                type="email"
-                placeholder="you@example.com"
-                className="w-full rounded-full border border-slate-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <Link to="/signup" className="inline-block">
-              <Button className="px-8 py-3 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition">
-                Sign up
-              </Button>
-            </Link>
+            
+            {/* Show user avatar when signed in, otherwise show signup form */}
+            {user ? (
+              <div className="flex items-center gap-4 max-w-xl">
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
+                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <div className="text-center">
+                  <p className="text-lg font-semibold text-slate-900">Welcome back!</p>
+                  <p className="text-sm text-slate-600">{user.name}</p>
+                  <Link to="/explore" className="inline-block mt-4">
+                    <Button className="px-6 py-2 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition">
+                      Explore Crypto
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="max-w-xl">
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    className="w-full rounded-full border border-slate-300 px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <Link to="/signup" className="inline-block">
+                  <Button className="px-8 py-3 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition">
+                    Sign up
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </section>
 

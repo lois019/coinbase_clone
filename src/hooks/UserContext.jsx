@@ -8,8 +8,9 @@ export function UserProvider({ children }) {
   useEffect(() => {
     // Check for token on app load
     const token = localStorage.getItem('token');
+    const userName = localStorage.getItem('userName');
     if (token) {
-      setUser({ token });
+      setUser({ token, name: userName });
     }
   }, []);
 
@@ -17,12 +18,14 @@ export function UserProvider({ children }) {
     setUser(userData);
     if (userData.token) {
       localStorage.setItem('token', userData.token);
+      localStorage.setItem('userName', userData.name || userData.email);
     }
   };
 
   const signOut = () => {
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('userName');
   };
 
   return (
