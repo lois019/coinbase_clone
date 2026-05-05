@@ -54,7 +54,7 @@ export default function SignUp() {
     try {
       const response = await authAPI.register({ name, email, password });
       if (response.message === 'User registered successfully') {
-        signIn({ email, token: response.token }); // Update frontend state
+        signIn({ name, email, token: response.token }); // Update frontend state
         setMessage("Account created successfully!");
         setTimeout(() => navigate('/'), 1000);
       }

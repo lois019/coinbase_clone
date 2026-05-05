@@ -44,8 +44,7 @@ export default function Home() {
             {/* Show simple welcome when signed in, otherwise show signup form */}
             {user ? (
               <div className="max-w-xl">
-                <p className="text-lg font-semibold text-slate-900">Welcome back, {user.name}!</p>
-                <Link to="/explore" className="inline-block mt-4">
+                <Link to="/explore" className="inline-block">
                   <Button className="px-6 py-2 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition">
                     Explore Crypto
                   </Button>
