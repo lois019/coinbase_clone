@@ -10,14 +10,19 @@ import { cryptoAPI } from "../services/api";
 export default function Explore() {
   const [search, setSearch] = useState("");
   const [cryptos, setCryptos] = useState([]);
+  const [newListings, setNewListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchCryptos = async () => {
+    const fetchData = async () => {
       try {
-        const data = await cryptoAPI.getAllCryptos();
-        setCryptos(data);
+        const [allCryptos, newCryptos] = await Promise.all([
+          cryptoAPI.getAllCryptos(),
+          cryptoAPI.getNewListings()
+        ]);
+        setCryptos(allCryptos);
+        setNewListings(newCryptos);
       } catch (err) {
         setError('Failed to load cryptocurrencies');
         console.error('Error fetching cryptos:', err);
@@ -26,7 +31,7 @@ export default function Explore() {
       }
     };
 
-    fetchCryptos();
+    fetchData();
   }, []);
 
   const filteredCryptos = cryptos.filter(
@@ -188,31 +193,52 @@ export default function Explore() {
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2">
               <h2 className="text-xl font-semibold text-slate-900 mb-4">Crypto market prices</h2>
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+              <div className="rounded-2xl border border-gray-200 overflow-hidden">
                 {filteredCryptos.length === 0 ? (
-                  <div className="col-span-full text-center text-gray-500 py-8">
+                  <div className="text-center text-gray-500 py-8">
                     <p className="text-lg mb-2">No cryptocurrencies found</p>
                     <p className="text-sm">Cryptocurrencies will appear here once added to the database.</p>
                   </div>
                 ) : (
-                  filteredCryptos.map((crypto) => (
-                    <Link
-                      key={crypto._id}
-                      to={`/asset/${crypto._id}`}
-                      className="block focus:outline-none focus:ring-2 focus:ring-blue-500 hover:scale-[1.02] transition-transform"
-                      aria-label={`View details for ${crypto.name}`}
-                    >
-                      <div className="rounded-2xl border border-gray-200 hover:border-blue-500 transition-all p-4">
-                        <CryptoCard
-                          name={crypto.name}
-                          symbol={crypto.symbol}
-                          price={crypto.price}
-                          change={crypto.change24h}
-                          icon={<img src={crypto.image} alt={crypto.name} className="w-8 h-8" />}
-                        />
-                      </div>
-                    </Link>
-                  ))
+                  <table className="w-full">
+                    <thead className="bg-slate-50 border-b border-gray-200">
+                      <tr>
+                        <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Asset</th>
+                        <th className="text-right px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Price</th>
+                        <th className="text-right px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">24h Change</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {filteredCryptos.map((crypto) => (
+                        <Link
+                          key={crypto._id}
+                          to={`/asset/${crypto._id}`}
+                          className="block hover:bg-slate-50 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          aria-label={`View details for ${crypto.name}`}
+                        >
+                          <tr className="cursor-pointer hover:bg-slate-50 transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <img src={crypto.image} alt={crypto.name} className="w-8 h-8" />
+                                <div>
+                                  <p className="font-semibold text-slate-900">{crypto.name}</p>
+                                  <p className="text-xs text-slate-500 uppercase">{crypto.symbol}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <p className="font-semibold text-slate-900">${crypto.price.toLocaleString()}</p>
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <p className={`font-semibold ${crypto.change24h >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                {crypto.change24h >= 0 ? '+' : ''}{crypto.change24h}%
+                              </p>
+                            </td>
+                          </tr>
+                        </Link>
+                      ))}
+                    </tbody>
+                  </table>
                 )}
               </div>
             </div>
@@ -239,6 +265,38 @@ export default function Explore() {
                     </p>
                   </Link>
                 ))}
+              </div>
+
+              <h2 className="text-xl font-semibold text-slate-900 mt-8 mb-4">New Listings</h2>
+              <div className="space-y-4">
+                {newListings.length === 0 ? (
+                  <div className="text-center text-gray-500 py-4">
+                    <p className="text-sm">No new listings yet</p>
+                  </div>
+                ) : (
+                  newListings.slice(0, 4).map((crypto) => (
+                    <Link
+                      key={crypto._id}
+                      to={`/asset/${crypto._id}`}
+                      className="rounded-2xl border border-gray-200 hover:border-blue-500 transition-all p-4 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      aria-label={`View details for ${crypto.name}`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <img src={crypto.image} alt={crypto.name} className="w-10 h-10" />
+                        <div>
+                          <p className="text-sm font-semibold">{crypto.name}</p>
+                          <p className="text-xs text-slate-500 uppercase tracking-wide">{crypto.symbol}</p>
+                          <p className="text-xs text-blue-600 mt-1">
+                            Added {new Date(crypto.listedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                          </p>
+                        </div>
+                      </div>
+                      <p className={crypto.change24h >= 0 ? "text-emerald-600 text-sm font-semibold" : "text-red-600 text-sm font-semibold"}>
+                        {crypto.change24h >= 0 ? "+" : ""}{crypto.change24h}%
+                      </p>
+                    </Link>
+                  ))
+                )}
               </div>
             </aside>
           </section>
