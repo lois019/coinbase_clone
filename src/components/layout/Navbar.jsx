@@ -22,7 +22,12 @@ export default function Navbar() {
           {user ? (
             <>
               <Link to="/profile" className="text-gray-700 hover:text-blue-600 font-medium transition">Profile</Link>
-              <span className="text-blue-600 font-semibold">{user.email}</span>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <span className="text-blue-600 font-semibold">Welcome back!</span>
+              </div>
               <button
                 onClick={signOut}
                 className="ml-2 px-3 py-1 rounded bg-gray-100 hover:bg-red-100 text-red-600 font-medium transition"
@@ -78,6 +83,12 @@ export default function Navbar() {
               >
                 Profile
               </Link>
+              <div className="flex items-center gap-2 px-4 py-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+                <span className="text-blue-600 font-semibold">Welcome back!</span>
+              </div>
               <button
                 onClick={() => {
                   signOut();
